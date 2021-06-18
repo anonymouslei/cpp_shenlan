@@ -18,5 +18,8 @@
       - 用大的数减去小的数（subtraction）
         - 先减去相同size的部分
         - 再将不同size的部分加上进位直接写入结果
+- 将M进制转化为N进制（ConvertMToN）
+  - reference: https://blog.csdn.net/Jaster_wisdom/article/details/52107785
+  - 参考了该博客的思路，但是代码都是自己独立完成
 - vector转化为String(VectorToString)
 - 将结果输出到屏幕上
