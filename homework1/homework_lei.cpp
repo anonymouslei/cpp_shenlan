@@ -167,8 +167,6 @@ void subtraction(const std::vector<int>& arg1, const std::vector<int>& arg2,
     if (ten_flag < 0) {
         result.push_back(-ten_flag);
     }
-    
-    
 }
 
 void Addition(const std::vector<int>& arg1, const bool arg1_positive,
@@ -200,9 +198,7 @@ void Addition(const std::vector<int>& arg1, const bool arg1_positive,
             result_positive = 1;
         }
     }
-    
 }
-
 
 std::vector<int> ConvertMToN(const std::vector<int>& input, const int M, const int N) {
     // reference:https://blog.csdn.net/Jaster_wisdom/article/details/52107785
@@ -239,41 +235,7 @@ std::vector<int> ConvertMToN(const std::vector<int>& input, const int M, const i
     return result;
 }
 
-int main1(const int argc, const char *argv[]) {
-// int main() {
-    std::string file_name = argv[1];
-    std::ifstream fin(file_name);
-    std::string input_numeric_s = argv[2];
-    std::string output_numeric_s = argv[3];
-
-    int input_numeric = StringToInt(input_numeric_s);
-    int output_numeric = StringToInt(output_numeric_s);
-
-    std::string line;
-    std::vector<std::string> num_arrays;
-    
-    while (std::getline(fin, line)) {
-        num_arrays.push_back(line);
-    } 
-
-    bool num1_positive_flag{true}, num2_positive_flag{true};
-    std::vector<int> num_array_1;
-    std::vector<int> num_array_2;
-    StringToVector(num_arrays[0], input_numeric, num_array_1, num1_positive_flag);
-    StringToVector(num_arrays[1], input_numeric, num_array_2, num2_positive_flag);
-
-    std::vector<int> result_array;
-    bool result_flag;
-    Addition(num_array_1, num1_positive_flag, num_array_2, num2_positive_flag, input_numeric, result_array, result_flag);
-
-    std::vector<int> result = ConvertMToN(result_array, input_numeric, output_numeric);
-
-    std::string out = VectorToString(result, result_flag);
-    std::cout << out << std::endl;
-}
-
 int main(const int argc, const char *argv[]) {
-// int main() {
     std::string file_name = argv[1];
     std::ifstream fin(file_name);
     std::string input_numeric_s = argv[2];
@@ -288,9 +250,6 @@ int main(const int argc, const char *argv[]) {
     while (std::getline(fin, line)) {
         num_arrays.push_back(line);
     } 
-
-    // std::string a = "+123143523425239072";
-    // std::string b = "53214324967686897563";
 
     bool num1_positive_flag{true}, num2_positive_flag{true};
     std::vector<int> num_array_1;
