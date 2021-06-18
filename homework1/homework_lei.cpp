@@ -4,6 +4,14 @@
 #include<vector>
 #include<exception>
 
+std::vector<int> FilpVector(const std::vector<int>& input) {
+    std::vector<int> result;
+    for (int i = input.size() - 1; i >= 0; i--) {
+        result.push_back(input.at(i));
+    }
+    return result;
+}
+
 int StringToInt(const std::string& input) {
     if (input.size() > 2)
         throw std::logic_error("The input must be 0~36!\n");
@@ -68,6 +76,8 @@ void StringToVector(const std::string& num_string, const int& numeric,
         int num_i;
         if (num > 96) {
             num_i = num - 'a' + 10;
+        } else if ((num > 64) && (num < 91)) {
+            num_i = num - 'A' + 10;
         } else {
             num_i = num - '0';
         }
@@ -103,7 +113,6 @@ std::string VectorToString(const std::vector<int>& num_vectors, const bool& posi
     if (out.empty()) {
         out.push_back('0');
     }
-    out.push_back('\0');
     return out;
 }
 
@@ -191,18 +200,53 @@ void Addition(const std::vector<int>& arg1, const bool arg1_positive,
             result_positive = 1;
         }
     }
+    
 }
 
-int main(const int argc, const char *argv[]) {
+
+std::vector<int> ConvertMToN(const std::vector<int>& input, const int M, const int N) {
+    // reference:https://blog.csdn.net/Jaster_wisdom/article/details/52107785
+    std::vector<int> result;
+    std::vector<int> filp_input = FilpVector(input);
+    std::vector<int> i = filp_input;
+    std::vector<int> new_vector;
+    while(true) {
+        bool null_flag = true;
+        int modu;
+        int tmp = i.at(0);
+        for (size_t j = 0; j < i.size(); j++) {
+            if (j > 0) {
+                tmp = tmp * M + i.at(j);
+            }
+            modu = tmp % N;
+
+            int division = tmp / N;
+            tmp = modu;
+            if (null_flag && (division == 0)) {
+                continue;
+            }
+            null_flag = false;
+            new_vector.push_back(division);
+        }
+        i.clear();
+        i = new_vector;
+        new_vector.clear();
+        result.push_back(modu);
+        if (i.size() == 0) {
+            break;
+        }
+    }
+    return result;
+}
+
+int main1(const int argc, const char *argv[]) {
 // int main() {
     std::string file_name = argv[1];
-    // std::string file_name = "/media/sf_VirtualShared/cpp/homework1/num.txt";
     std::ifstream fin(file_name);
     std::string input_numeric_s = argv[2];
     std::string output_numeric_s = argv[3];
 
     int input_numeric = StringToInt(input_numeric_s);
-    std::cout << input_numeric << std::endl;
     int output_numeric = StringToInt(output_numeric_s);
 
     std::string line;
@@ -222,6 +266,44 @@ int main(const int argc, const char *argv[]) {
     bool result_flag;
     Addition(num_array_1, num1_positive_flag, num_array_2, num2_positive_flag, input_numeric, result_array, result_flag);
 
-    std::string out = VectorToString(result_array, result_flag);
+    std::vector<int> result = ConvertMToN(result_array, input_numeric, output_numeric);
+
+    std::string out = VectorToString(result, result_flag);
+    std::cout << out << std::endl;
+}
+
+int main(const int argc, const char *argv[]) {
+// int main() {
+    std::string file_name = argv[1];
+    std::ifstream fin(file_name);
+    std::string input_numeric_s = argv[2];
+    std::string output_numeric_s = argv[3];
+
+    int input_numeric = StringToInt(input_numeric_s);
+    int output_numeric = StringToInt(output_numeric_s);
+
+    std::string line;
+    std::vector<std::string> num_arrays;
+    
+    while (std::getline(fin, line)) {
+        num_arrays.push_back(line);
+    } 
+
+    // std::string a = "+123143523425239072";
+    // std::string b = "53214324967686897563";
+
+    bool num1_positive_flag{true}, num2_positive_flag{true};
+    std::vector<int> num_array_1;
+    std::vector<int> num_array_2;
+    StringToVector(num_arrays[0], input_numeric, num_array_1, num1_positive_flag);
+    StringToVector(num_arrays[1], input_numeric, num_array_2, num2_positive_flag);
+
+    std::vector<int> result_array;
+    bool result_flag;
+    Addition(num_array_1, num1_positive_flag, num_array_2, num2_positive_flag, input_numeric, result_array, result_flag);
+
+    std::vector<int> result = ConvertMToN(result_array, input_numeric, output_numeric);
+
+    std::string out = VectorToString(result, result_flag);
     std::cout << out << std::endl;
 }
