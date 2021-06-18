@@ -23,7 +23,11 @@ int StringToInt(const std::string& input) {
     if (input.size() < 2) {
        return (input[0] - '0');
     }
-    return (input[1] - '0') + (input[0] - '0') * 10;
+    int result_int = (input[1] - '0') + (input[0] - '0') * 10;
+    if (result_int > 36) {
+        throw std::logic_error("The input must be 0~36!\n");
+    }
+    return result_int;
 }
 
 int IsGreater(const std::vector<int>& arg1, const std::vector<int>& arg2) {
