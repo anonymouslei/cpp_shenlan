@@ -1,4 +1,7 @@
-# 编程思路
+# project 1
+## 使用方法
+./a.out num.txt 8 3
+## 编程思路
 - 将参数读入程序
 - 将string数据类型转换为vector形式（StringToVector）
   - 存入符号位。
