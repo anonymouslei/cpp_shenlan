@@ -10,7 +10,7 @@ private:
 int ans = 0;
 int main() {
     /* read file */
-    std::string file_name = "/home/lei/lei/code/cpptest/sudo/easy.txt";
+    std::string file_name = "/media/sf_VirtualShared/cpp/homework2/Project2/sudo/hard++.txt";
     Sudoku test;
     test.readSudokuFromFile(file_name);
 
@@ -27,5 +27,6 @@ int main() {
     std::chrono::duration<double, std::milli> duration_mili = current_time - server_create_time_;
     std::cout << "PrintDuration : duration_mili duration = " << (long)duration_mili.count()
               << " ms";
-    test.printSudoku();
+    // test.printSudoku();
+    test.printNumOfSolutions();
 }

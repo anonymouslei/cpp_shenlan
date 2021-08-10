@@ -23,5 +23,5 @@ private:
     std::vector<std::vector<int>> rows_, cols_, boxes_, sudoku_board_;
     int numOfSolutions_;
 
-    bool helper(int row, int col);
+    void helper(int row, int col);
 };
