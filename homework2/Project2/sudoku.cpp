@@ -1,11 +1,6 @@
 #include "sudoku.hpp"
 
-Sudoku::Sudoku() {
-    rows_ = std::vector<std::vector<int>>(9, std::vector<int>(10));
-    cols_ = std::vector<std::vector<int>>(9, std::vector<int>(10));
-    boxes_ = std::vector<std::vector<int>>(9, std::vector<int>(10));
-    sudoku_board_ = std::vector<std::vector<int>>(9, std::vector<int>(9));
-}
+Sudoku::Sudoku() { numOfSolutions_ = 0; }
 
 void Sudoku::readSudokuFromFile(const std::string &file_name) {
     std::ifstream fin;
@@ -41,23 +36,24 @@ void Sudoku::readSudokuFromFile(const std::string &file_name) {
 
 void Sudoku::solveSudoku() { helper(0, 0); }
 
-bool Sudoku::helper(int row, int col) {
-    // std::cout << "row: " << row << ", col: " << col << std::endl;
-    if (row == 9) {
-        return true;
+void Sudoku::helper(int row, int col) {
+    if (col == 9) {
+        numOfSolutions_++;
+        return;
     }
 
     int next_col, next_row;
-    next_col = (col + 1) % 9;
+    next_row = (row + 1) % 9;
 
-    if (next_col == 0) {
-        next_row = row + 1;
+    if (next_row == 0) {
+        next_col = col + 1;
     } else {
-        next_row = row;
+        next_col = col;
     }
 
     if (sudoku_board_[row][col] != 0) {
-        return helper(next_row, next_col);
+        helper(next_row, next_col);
+        return;
     }
 
     for (size_t i = 1; i < 10; i++) {
@@ -70,9 +66,8 @@ bool Sudoku::helper(int row, int col) {
             cols_[col][i] = 1;
             boxes_[box_int][i] = 1;
             sudoku_board_[row][col] = i;
-            if (helper(next_row, next_col)) {
-                return true;
-            }
+
+            helper(next_row, next_col);
             // 不满足就状态返回
             rows_[row][i] = 0;
             cols_[col][i] = 0;
@@ -80,12 +75,11 @@ bool Sudoku::helper(int row, int col) {
             sudoku_board_[row][col] = 0;
         }
     }
-    return false;
 }
 
 void Sudoku::printSudoku() {
     std::cout << "sudoku result: \n";
-    for (auto i : sudoku_board_) {
+    for (auto &i : sudoku_board_) {
         for (auto j : i) {
             std::cout << j << " ";
         }
