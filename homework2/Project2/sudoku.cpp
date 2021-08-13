@@ -86,3 +86,22 @@ void Sudoku::printSudoku() {
         std::cout << "\n";
     }
 }
+
+
+// result
+median : 35;
+hard : 1226;
+hard + : 12660;
+hard++ : 17619;
+
+// change to array
+median : 18;
+hard : 602;
+hard + : 5484;
+hard++ : 8818;
+
+// change to col
+median : 4;
+hard : 877;
+hard + : 1400;
+hard++ : 1902;
