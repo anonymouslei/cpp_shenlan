@@ -17,14 +17,16 @@ template <int... valsT> void print(iseq<valsT...>) {
 
 
 // add
+template<typename x1, typename x2, typename x3> struct Add;
+
 template<int x1, int x2, int sign>
-struct Add {
+struct Add<iseq<x1>, iseq<x2>,iseq<sign>> {
     constexpr static int res = x1 + x2 + sign;
 };
 
 int main() {
 
-    constexpr auto x = Add<2,4,0>::res;
+    constexpr auto x = Add<iseq<2>,iseq<4>,iseq<0>>::res;
     std::cout << x << std::endl;
   // std::cout << M<3>::val << std::endl;
 }
