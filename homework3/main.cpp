@@ -37,13 +37,31 @@ template <typename x1, typename x2, typename x3> struct Add;
 // TODO: 如果满10，则进一
 
 template <unsigned int x1, unsigned int x2, unsigned int sign>
-struct Add<iseq<x1>, iseq<x2>, iseq<sign>> {
-  constexpr static unsigned int res = x1 + x2 + sign;
+struct Add<iseq<x1>, iseq<x2>, iseq<sign>>
+    : std::conditional<((x1 + x2 + sign) < 10), iseq<x1 + x2 + sign>,
+                       iseq<x1 + x2 + sign - 10>>::type {
+  static constexpr unsigned int tmp = x1 + x2 + sign;
+  using new_sign = iseq<(tmp / 10)>;
 };
+
+// template <unsigned int x1, unsigned int x2, unsigned int sign>
+// struct Add<iseq<x1>, iseq<x2>, iseq<sign>>
+// : std::enable_if<((x1+x2+sign)>=10), iseq<x1+x2+sign-10>>
+// {
+//   using new_sign = iseq<1>;
+//   using res = iseq<x1+x2+sign-10>;
+// };
 
 int main() {
 
-  constexpr auto x = Add<iseq<2>, iseq<4>, iseq<0>>::res;
+  // constexpr auto x = Add<iseq<2>, iseq<4>, iseq<0>>::res;
+  using D1 = Add<iseq<9>, iseq<2>, iseq<1>>;
+  print(D1());
+  print(D1::new_sign());
+
+  using D2 = Add<iseq<0>, iseq<0>, iseq<0>>;
+  print(D2());
+  print(D2::new_sign());
   // std::cout << x << std::endl;
   using D = iseq<1, 5, 8, 2, 9>;
   print(D());
