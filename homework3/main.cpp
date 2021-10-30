@@ -41,7 +41,8 @@ struct Add_item<iseq<x1>, iseq<x2>, iseq<sign>> {
                       //  iseq<x1 + x2 + sign - 10>>::type {
   static constexpr unsigned add_value = x1+x2+sign;
   static constexpr unsigned int value = (add_value) % 10;
-  using new_sign = iseq<(add_value / 10)>;
+  static constexpr unsigned sign_flag = add_value / 10;
+  using new_sign = iseq<sign_flag>;
 };
 
 // add func
@@ -59,24 +60,31 @@ struct Add<iseq<>, iseq<T1, TRmain1...>, iseq<T2, TRmain2...>, iseq<0>()> {
 // 第二种情况：结果不为空，x1为空
 template <unsigned int... TRes, unsigned int T2, unsigned int... TRmain2,
           unsigned int sign>
-struct Add<iseq<TRes...>, iseq<>, iseq<T2, TRmain2...>, iseq<sign>()> {
-  using res = iseq<TRes..., T2 + sign, TRmain2...>;
+struct Add<iseq<TRes...>, iseq<>, iseq<T2, TRmain2...>, iseq<sign>> {
+  using tmp = Add_item<iseq<T2>, iseq<0>, iseq<sign>>;
+  using res = typename std::conditional<(tmp::sign_flag == 1), 
+                                         typename Add<iseq<TRes..., tmp::value>, iseq<tmp::sign_flag>, iseq<TRmain2...>, iseq<0>>::res, 
+                                         iseq<TRes..., tmp::value, TRmain2...>>::type; 
+                                        //  iseq<TRes..., >>::type;
+// typename Add<tmp, iseq<TRmain1...>, iseq<>, typename tmp::new_sign>::res, 
+                                // iseq<TRes..., tmp::value, TRmain1...>
+  // using res = iseq<TRes..., T2 + sign, TRmain2...>;
 };
 
 // 第三种情况：结果不为空，x2为空
 template <unsigned int... TRes, unsigned int T1, unsigned int... TRmain1,
           unsigned int sign>
 struct Add<iseq<TRes...>, iseq<T1, TRmain1...>, iseq<>, iseq<sign>> {
-  using res = iseq<TRes..., T1 + sign, TRmain1...>;
+  using tmp = Add_item<iseq<T1>, iseq<0>, iseq<sign>>;
+  using res = typename std::conditional<(tmp::sign_flag == 1), 
+                                         typename Add<iseq<TRes..., tmp::value>, iseq<tmp::sign_flag>, iseq<TRmain1...>, iseq<0>>::res, 
+                                         iseq<TRes..., tmp::value, TRmain1...>>::type; 
 };
 
 // 第四种情况:结果不为空，x1,x2为空,//需要根据符号位是否为0来判断
 template <unsigned int... TRes, 
           unsigned int sign>
 struct Add<iseq<TRes...>, iseq<>, iseq<>, iseq<sign>>{
-    // : std::conditional<(sign == 1), iseq<TRes..., sign>, iseq<TRes...>>::type {
-
-  // using res = iseq<TRes..., T1 + sign, TRmain1...>;
   using res = typename std::conditional<(sign == 1), iseq<TRes..., sign>, iseq<TRes...>>::type;
 };
 
@@ -105,10 +113,17 @@ int main() {
   // using res = Reverse<iseq<>, D>::old_seq;
   // print(res());
 
-  using D1 = iseq<8>;
-  using D2 = iseq<5>;
-  using res = Add<iseq<>, D1, D2, iseq<0>>::res;
-  print(res());
+  using D2 = iseq<1,5,9,9>;
+  using D1 = iseq<0>;
+
+  using reverse_D1 = Reverse<iseq<>, D1>::old_seq;
+  using reverse_D2 = Reverse<iseq<>, D2>::old_seq;
+
+  using res = Add<iseq<>, reverse_D1, reverse_D2, iseq<0>>::res;
+
+  using final_res = Reverse<iseq<>, res>::old_seq;
+  print(final_res());
 
 
 }
+
