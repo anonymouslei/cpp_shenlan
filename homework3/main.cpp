@@ -37,9 +37,7 @@ template <typename x1, typename x2, typename x3> struct Add_item;
 
 template <unsigned int x1, unsigned int x2, unsigned int sign>
 struct Add_item<iseq<x1>, iseq<x2>, iseq<sign>> {
-    // : std::conditional<((x1 + x2 + sign) < 10), iseq<x1 + x2 + sign>,
-                      //  iseq<x1 + x2 + sign - 10>>::type {
-  static constexpr unsigned add_value = x1+x2+sign;
+  static constexpr unsigned add_value = x1 + x2 + sign;
   static constexpr unsigned int value = (add_value) % 10;
   static constexpr unsigned sign_flag = add_value / 10;
   using new_sign = iseq<sign_flag>;
@@ -62,13 +60,11 @@ template <unsigned int... TRes, unsigned int T2, unsigned int... TRmain2,
           unsigned int sign>
 struct Add<iseq<TRes...>, iseq<>, iseq<T2, TRmain2...>, iseq<sign>> {
   using tmp = Add_item<iseq<T2>, iseq<0>, iseq<sign>>;
-  using res = typename std::conditional<(tmp::sign_flag == 1), 
-                                         typename Add<iseq<TRes..., tmp::value>, iseq<>, iseq<TRmain2...>, typename tmp::new_sign>::res, 
-                                         iseq<TRes..., tmp::value, TRmain2...>>::type; 
-                                        //  iseq<TRes..., >>::type;
-// typename Add<tmp, iseq<TRmain1...>, iseq<>, typename tmp::new_sign>::res, 
-                                // iseq<TRes..., tmp::value, TRmain1...>
-  // using res = iseq<TRes..., T2 + sign, TRmain2...>;
+  using res = typename std::conditional<
+      (tmp::sign_flag == 1),
+      typename Add<iseq<TRes..., tmp::value>, iseq<>, iseq<TRmain2...>,
+                   typename tmp::new_sign>::res,
+      iseq<TRes..., tmp::value, TRmain2...>>::type;
 };
 
 // 第三种情况：结果不为空，x2为空
@@ -76,26 +72,28 @@ template <unsigned int... TRes, unsigned int T1, unsigned int... TRmain1,
           unsigned int sign>
 struct Add<iseq<TRes...>, iseq<T1, TRmain1...>, iseq<>, iseq<sign>> {
   using tmp = Add_item<iseq<T1>, iseq<0>, iseq<sign>>;
-  using res = typename std::conditional<(tmp::sign_flag == 1), 
-                                         typename Add<iseq<TRes..., tmp::value>, iseq<>, iseq<TRmain1...>, typename tmp::new_sign>::res, 
-                                        //  typename Add<iseq<TRes..., tmp::value>, iseq<>, iseq<TRmain2...>, typename tmp::new_sign>::res, 
-                                         iseq<TRes..., tmp::value, TRmain1...>>::type; 
+  using res = typename std::conditional<
+      (tmp::sign_flag == 1),
+      typename Add<iseq<TRes..., tmp::value>, iseq<>, iseq<TRmain1...>,
+                   typename tmp::new_sign>::res,
+      iseq<TRes..., tmp::value, TRmain1...>>::type;
 };
 
 // 第四种情况:结果不为空，x1,x2为空,//需要根据符号位是否为0来判断
-template <unsigned int... TRes, 
-          unsigned int sign>
-struct Add<iseq<TRes...>, iseq<>, iseq<>, iseq<sign>>{
-  using res = typename std::conditional<(sign == 1), iseq<TRes..., sign>, iseq<TRes...>>::type;
+template <unsigned int... TRes, unsigned int sign>
+struct Add<iseq<TRes...>, iseq<>, iseq<>, iseq<sign>> {
+  using res = typename std::conditional<(sign == 1), iseq<TRes..., sign>,
+                                        iseq<TRes...>>::type;
 };
 
 // 第五种情况：结果不为空，x1,x2也不为空
-template <unsigned int... TRes, unsigned int T1, unsigned int... TRmain1, unsigned int T2,
-          unsigned int... TRmain2, unsigned int sign>
-struct Add<iseq<TRes...>, iseq<T1, TRmain1...>, iseq<T2, TRmain2...>, iseq<sign>> {
+template <unsigned int... TRes, unsigned int T1, unsigned int... TRmain1,
+          unsigned int T2, unsigned int... TRmain2, unsigned int sign>
+struct Add<iseq<TRes...>, iseq<T1, TRmain1...>, iseq<T2, TRmain2...>,
+           iseq<sign>> {
   using tmp = Add_item<iseq<T1>, iseq<T2>, iseq<sign>>;
-  using res = typename Add<iseq<TRes..., tmp::value>, iseq<TRmain1...>, iseq<TRmain2...>,
-                           typename tmp::new_sign>::res;
+  using res = typename Add<iseq<TRes..., tmp::value>, iseq<TRmain1...>,
+                           iseq<TRmain2...>, typename tmp::new_sign>::res;
 };
 
 int main() {
@@ -125,4 +123,3 @@ int main() {
   using final_res = Reverse<iseq<>, res>::old_seq;
   print(final_res());
 }
-
