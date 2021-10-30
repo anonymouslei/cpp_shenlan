@@ -63,7 +63,7 @@ template <unsigned int... TRes, unsigned int T2, unsigned int... TRmain2,
 struct Add<iseq<TRes...>, iseq<>, iseq<T2, TRmain2...>, iseq<sign>> {
   using tmp = Add_item<iseq<T2>, iseq<0>, iseq<sign>>;
   using res = typename std::conditional<(tmp::sign_flag == 1), 
-                                         typename Add<iseq<TRes..., tmp::value>, iseq<tmp::sign_flag>, iseq<TRmain2...>, iseq<0>>::res, 
+                                         typename Add<iseq<TRes..., tmp::value>, iseq<>, iseq<TRmain2...>, typename tmp::new_sign>::res, 
                                          iseq<TRes..., tmp::value, TRmain2...>>::type; 
                                         //  iseq<TRes..., >>::type;
 // typename Add<tmp, iseq<TRmain1...>, iseq<>, typename tmp::new_sign>::res, 
@@ -77,7 +77,8 @@ template <unsigned int... TRes, unsigned int T1, unsigned int... TRmain1,
 struct Add<iseq<TRes...>, iseq<T1, TRmain1...>, iseq<>, iseq<sign>> {
   using tmp = Add_item<iseq<T1>, iseq<0>, iseq<sign>>;
   using res = typename std::conditional<(tmp::sign_flag == 1), 
-                                         typename Add<iseq<TRes..., tmp::value>, iseq<tmp::sign_flag>, iseq<TRmain1...>, iseq<0>>::res, 
+                                         typename Add<iseq<TRes..., tmp::value>, iseq<>, iseq<TRmain1...>, typename tmp::new_sign>::res, 
+                                        //  typename Add<iseq<TRes..., tmp::value>, iseq<>, iseq<TRmain2...>, typename tmp::new_sign>::res, 
                                          iseq<TRes..., tmp::value, TRmain1...>>::type; 
 };
 
@@ -113,7 +114,7 @@ int main() {
   // using res = Reverse<iseq<>, D>::old_seq;
   // print(res());
 
-  using D2 = iseq<1,5,9,9>;
+  using D2 = iseq<0>;
   using D1 = iseq<0>;
 
   using reverse_D1 = Reverse<iseq<>, D1>::old_seq;
@@ -123,7 +124,5 @@ int main() {
 
   using final_res = Reverse<iseq<>, res>::old_seq;
   print(final_res());
-
-
 }
 
