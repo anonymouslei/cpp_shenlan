@@ -123,14 +123,15 @@ struct ConvertNToTen<iseq<TRes>, iseq<>, iseq<N>> {
 };
 
 // convert 10 to M
-template<typename Res, typename Rem, typename M> struct ConvertTenToM;
+template <typename Res, typename Rem, typename M> struct ConvertTenToM;
 
 //第一种情况：结果为空，输入不为空
 template <unsigned int T, unsigned int M>
 struct ConvertTenToM<iseq<>, iseq<T>, iseq<M>> {
   static constexpr unsigned int quotient = T / M;
   static constexpr unsigned int remainder = T % M;
-  using res = typename ConvertTenToM<iseq<remainder>, iseq<quotient>, iseq<M>>::res;
+  using res =
+      typename ConvertTenToM<iseq<remainder>, iseq<quotient>, iseq<M>>::res;
 };
 
 //第二种情况：结果不为空，输入不为空
@@ -139,7 +140,8 @@ struct ConvertTenToM<iseq<TProcessed...>, iseq<T>, iseq<M>> {
   static constexpr unsigned int quotient = T / M;
   static constexpr unsigned int remainder = T % M;
   // using iseq_value = iseq<quotient>;
-  using res = typename ConvertTenToM<iseq<remainder, TProcessed...>, iseq<quotient>, iseq<M>>::res;
+  using res = typename ConvertTenToM<iseq<remainder, TProcessed...>,
+                                     iseq<quotient>, iseq<M>>::res;
 };
 
 //第三种情况：终止条件
@@ -150,37 +152,30 @@ struct ConvertTenToM<iseq<TProcessed...>, iseq<0>, iseq<M>> {
 
 int main() {
 
-  // constexpr auto x = Add<iseq<2>, iseq<4>, iseq<0>>::res;
-  // using D1 = Add_item<iseq<9>, iseq<2>, iseq<1>>;
-  // print(D1());
-  // print(D1::new_sign());
+  std::cout << "元编程长整数加法：\n";
+  using D1 = iseq<1, 9, 9>;
+  using D2 = iseq<1, 8>;
+  print(D2());
+  print(D1());
 
-  // using D2 = Add_item<iseq<9>, iseq<0>, iseq<1>>;
-  // print(D2());
-  // print(D2::new_sign());
-  // print(D2::new_sign());
-  // // std::cout << x << std::endl;
-  // using D = iseq<1, 5, 8, 2, 9>;
-  // print(D());
-  // using res = Reverse<iseq<>, D>::old_seq;
-  // print(res());
+  using reverse_D1 = Reverse<iseq<>, D1>::old_seq;
+  using reverse_D2 = Reverse<iseq<>, D2>::old_seq;
 
-  // using D2 = iseq<1,9, 3 ,9,8>;
-  // using D1 = iseq<5>;
+  using res = Add<iseq<>, reverse_D1, reverse_D2, iseq<0>>::res;
 
-  // using reverse_D1 = Reverse<iseq<>, D1>::old_seq;
-  // using reverse_D2 = Reverse<iseq<>, D2>::old_seq;
+  using final_res = Reverse<iseq<>, res>::old_seq;
+  std::cout << "结果： ";
+  print(final_res());
 
-  // using res = Add<iseq<>, reverse_D1, reverse_D2, iseq<0>>::res;
+  static constexpr unsigned int M = 2;
+  static constexpr unsigned int N = 16;
+  using T1 = iseq<0, 1, 1, 1, 1, 0, 1, 0>;
+  std::cout << "M/N进制转换, 输入" << M << "进制，输出" << N << "进制。 输入为：\n";
+  print(T1());
+  using T1_10 = ConvertNToTen<iseq<>, T1, iseq<M>>::res;
+  // print(T1_10());
 
-  // using final_res = Reverse<iseq<>, res>::old_seq;
-  // print(final_res());
-
-  // using D1 = iseq<0, 1, 1, 1, 1, 0, 1, 0>;
-  // using D1_10 = ConvertNToTen<iseq<>, D1, iseq<2>>::res;
-  // print(D1_10());
-
-  using D1 = iseq<122>;
-  using D1_10 = ConvertTenToM<iseq<>, D1, iseq<2>>::res;
-  print(D1_10());
+  using T1_2 = ConvertTenToM<iseq<>, T1_10, iseq<N>>::res;
+  std::cout << "结果： ";
+  print(T1_2());
 }
