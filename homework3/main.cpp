@@ -95,32 +95,57 @@ struct Add<iseq<TRes...>, iseq<T1, TRmain1...>, iseq<T2, TRmain2...>,
   using res = typename Add<iseq<TRes..., tmp::value>, iseq<TRmain1...>,
                            iseq<TRmain2...>, typename tmp::new_sign>::res;
 };
-// convert M to 10
-template<typename Res, typename Rem, typename N> struct ConvertNToTen;
+
+// convert N to 10
+template <typename Res, typename Rem, typename N> struct ConvertNToTen;
 
 //第一种情况:结果为空，输入不为空
-template< unsigned int T, unsigned int... TRmain, unsigned int N>
-struct ConvertNToTen<iseq<>, iseq<T, TRmain...>, iseq<N>>
-{
+template <unsigned int T, unsigned int... TRmain, unsigned int N>
+struct ConvertNToTen<iseq<>, iseq<T, TRmain...>, iseq<N>> {
   static constexpr unsigned int value = T;
   using iseq_value = iseq<value>;
-  using res = typename ConvertNToTen< iseq_value, iseq<TRmain...>, iseq<N>>::res;
+  using res = typename ConvertNToTen<iseq_value, iseq<TRmain...>, iseq<N>>::res;
 };
 
 //第二种情况：结果不为空，输入不为空
-template<unsigned int TRes,unsigned int T, unsigned int... TRmain, unsigned int N>
-struct ConvertNToTen<iseq<TRes>, iseq<T, TRmain...>, iseq<N>>
-{
-  static constexpr unsigned int value = TRes*N + T;
+template <unsigned int TRes, unsigned int T, unsigned int... TRmain,
+          unsigned int N>
+struct ConvertNToTen<iseq<TRes>, iseq<T, TRmain...>, iseq<N>> {
+  static constexpr unsigned int value = TRes * N + T;
   using iseq_value = iseq<value>;
-  using res = typename ConvertNToTen< iseq_value, iseq<TRmain...>, iseq<N>>::res;
+  using res = typename ConvertNToTen<iseq_value, iseq<TRmain...>, iseq<N>>::res;
 };
 
 // 终止条件：结果不为空，输入为空
-template<unsigned int TRes,unsigned int N>
-struct ConvertNToTen<iseq<TRes>, iseq<>, iseq<N>>
-{
+template <unsigned int TRes, unsigned int N>
+struct ConvertNToTen<iseq<TRes>, iseq<>, iseq<N>> {
   using res = iseq<TRes>;
+};
+
+// convert 10 to M
+template<typename Res, typename Rem, typename M> struct ConvertTenToM;
+
+//第一种情况：结果为空，输入不为空
+template <unsigned int T, unsigned int M>
+struct ConvertTenToM<iseq<>, iseq<T>, iseq<M>> {
+  static constexpr unsigned int quotient = T / M;
+  static constexpr unsigned int remainder = T % M;
+  using res = typename ConvertTenToM<iseq<remainder>, iseq<quotient>, iseq<M>>::res;
+};
+
+//第二种情况：结果不为空，输入不为空
+template <unsigned int... TProcessed, unsigned int T, unsigned int M>
+struct ConvertTenToM<iseq<TProcessed...>, iseq<T>, iseq<M>> {
+  static constexpr unsigned int quotient = T / M;
+  static constexpr unsigned int remainder = T % M;
+  // using iseq_value = iseq<quotient>;
+  using res = typename ConvertTenToM<iseq<remainder, TProcessed...>, iseq<quotient>, iseq<M>>::res;
+};
+
+//第三种情况：终止条件
+template <unsigned int... TProcessed, unsigned int M>
+struct ConvertTenToM<iseq<TProcessed...>, iseq<0>, iseq<M>> {
+  using res = iseq<TProcessed...>;
 };
 
 int main() {
@@ -151,9 +176,11 @@ int main() {
   // using final_res = Reverse<iseq<>, res>::old_seq;
   // print(final_res());
 
+  // using D1 = iseq<0, 1, 1, 1, 1, 0, 1, 0>;
+  // using D1_10 = ConvertNToTen<iseq<>, D1, iseq<2>>::res;
+  // print(D1_10());
 
-  using D1 = iseq<0,1,1,1,1,0,1,0>;
-  using D1_10 = ConvertNToTen<iseq<>, D1, iseq<2>>::res;
+  using D1 = iseq<122>;
+  using D1_10 = ConvertTenToM<iseq<>, D1, iseq<2>>::res;
   print(D1_10());
-
 }
