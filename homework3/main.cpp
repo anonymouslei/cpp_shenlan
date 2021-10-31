@@ -37,9 +37,9 @@ template <typename x1, typename x2, typename x3> struct Add_item;
 
 template <unsigned int x1, unsigned int x2, unsigned int sign>
 struct Add_item<iseq<x1>, iseq<x2>, iseq<sign>> {
-  static constexpr unsigned add_value = x1 + x2 + sign;
+  static constexpr unsigned int add_value = x1 + x2 + sign;
   static constexpr unsigned int value = (add_value) % 10;
-  static constexpr unsigned sign_flag = add_value / 10;
+  static constexpr unsigned int sign_flag = add_value / 10;
   using new_sign = iseq<sign_flag>;
 };
 
@@ -95,6 +95,33 @@ struct Add<iseq<TRes...>, iseq<T1, TRmain1...>, iseq<T2, TRmain2...>,
   using res = typename Add<iseq<TRes..., tmp::value>, iseq<TRmain1...>,
                            iseq<TRmain2...>, typename tmp::new_sign>::res;
 };
+// convert M to 10
+template<typename Res, typename Rem, typename N> struct ConvertNToTen;
+
+//第一种情况:结果为空，输入不为空
+template< unsigned int T, unsigned int... TRmain, unsigned int N>
+struct ConvertNToTen<iseq<>, iseq<T, TRmain...>, iseq<N>>
+{
+  static constexpr unsigned int value = T;
+  using iseq_value = iseq<value>;
+  using res = typename ConvertNToTen< iseq_value, iseq<TRmain...>, iseq<N>>::res;
+};
+
+//第二种情况：结果不为空，输入不为空
+template<unsigned int TRes,unsigned int T, unsigned int... TRmain, unsigned int N>
+struct ConvertNToTen<iseq<TRes>, iseq<T, TRmain...>, iseq<N>>
+{
+  static constexpr unsigned int value = TRes*N + T;
+  using iseq_value = iseq<value>;
+  using res = typename ConvertNToTen< iseq_value, iseq<TRmain...>, iseq<N>>::res;
+};
+
+// 终止条件：结果不为空，输入为空
+template<unsigned int TRes,unsigned int N>
+struct ConvertNToTen<iseq<TRes>, iseq<>, iseq<N>>
+{
+  using res = iseq<TRes>;
+};
 
 int main() {
 
@@ -103,8 +130,9 @@ int main() {
   // print(D1());
   // print(D1::new_sign());
 
-  // using D2 = Add_item<iseq<0>, iseq<0>, iseq<0>>;
+  // using D2 = Add_item<iseq<9>, iseq<0>, iseq<1>>;
   // print(D2());
+  // print(D2::new_sign());
   // print(D2::new_sign());
   // // std::cout << x << std::endl;
   // using D = iseq<1, 5, 8, 2, 9>;
@@ -112,14 +140,20 @@ int main() {
   // using res = Reverse<iseq<>, D>::old_seq;
   // print(res());
 
-  using D2 = iseq<0>;
-  using D1 = iseq<0>;
+  // using D2 = iseq<1,9, 3 ,9,8>;
+  // using D1 = iseq<5>;
 
-  using reverse_D1 = Reverse<iseq<>, D1>::old_seq;
-  using reverse_D2 = Reverse<iseq<>, D2>::old_seq;
+  // using reverse_D1 = Reverse<iseq<>, D1>::old_seq;
+  // using reverse_D2 = Reverse<iseq<>, D2>::old_seq;
 
-  using res = Add<iseq<>, reverse_D1, reverse_D2, iseq<0>>::res;
+  // using res = Add<iseq<>, reverse_D1, reverse_D2, iseq<0>>::res;
 
-  using final_res = Reverse<iseq<>, res>::old_seq;
-  print(final_res());
+  // using final_res = Reverse<iseq<>, res>::old_seq;
+  // print(final_res());
+
+
+  using D1 = iseq<0,1,1,1,1,0,1,0>;
+  using D1_10 = ConvertNToTen<iseq<>, D1, iseq<2>>::res;
+  print(D1_10());
+
 }
