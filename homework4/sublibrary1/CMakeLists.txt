@@ -11,6 +11,6 @@ add_subdirectory(util)
 
 message(STATUS "project source dir is" ${PROJECT_SOURCE_DIR}/util)
 
-target_include_directories( ${PROJECT_NAME}
-        PUBLIC
-        ${PROJECT_SOURCE_DIR}/util)
+#target_include_directories( ${PROJECT_NAME}
+#        PUBLIC
+#        ${PROJECT_SOURCE_DIR}/util)
