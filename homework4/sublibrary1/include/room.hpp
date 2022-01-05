@@ -5,7 +5,7 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <thread>
+#include <unistd.h>
 #include <vector>
 
 #include "figure.hpp"
@@ -14,15 +14,17 @@
 namespace homework {
 namespace room {
 
+using namespace util;
+
 class Room {
 public:
-  Room(util::RoomType room_type, figure::Explorer &explorer)
+  Room(RoomType room_type, figure::Explorer &explorer)
       : room_type_(room_type), explorer_(explorer){};
   //  ~Room();
 
-  virtual bool enter_room(std::vector<std::shared_ptr<util::Buff>> &buffers);
+  virtual bool enter_room() = 0;
   virtual void battle();
-  virtual std::shared_ptr<util::Buff> create_buffer();
+  //  virtual std::shared_ptr<Buff> create_buffer();
   virtual void settlement();
   virtual bool run();
   virtual void is_monsters_dead();
@@ -30,38 +32,41 @@ public:
 protected:
   std::vector<std::shared_ptr<figure::Monster>> monsters_;
   int monster_num_;
+  figure::Explorer &explorer_;
 
 private:
   util::RoomType room_type_;
-  figure::Explorer &explorer_;
 };
 
 class Camp : public Room {
 public:
-  Camp(figure::Explorer &explorer) : Room(util::RoomType::camp, explorer){};
+  Camp(figure::Explorer &explorer) : Room(RoomType::camp, explorer){};
   //  ~Camp();
+  bool enter_room() override;
 };
 
 class CommonRoom : public Room {
 public:
   CommonRoom(figure::Explorer &explorer);
+  bool enter_room() override;
 };
 
 class TrapRoom : public Room {
 public:
-  TrapRoom(figure::Explorer &explorer) : Room(util::RoomType::trap, explorer){};
+  TrapRoom(figure::Explorer &explorer) : Room(RoomType::trap, explorer){};
+  bool enter_room() override;
 };
 
 class HeaderRoom : public Room {
 public:
-  HeaderRoom(figure::Explorer &explorer)
-      : Room(util::RoomType::header, explorer){};
+  HeaderRoom(figure::Explorer &explorer) : Room(RoomType::header, explorer){};
+  bool enter_room() override;
 };
 
 class WeaponRoom : public Room {
 public:
-  WeaponRoom(figure::Explorer &explorer)
-      : Room(util::RoomType::weapon, explorer){};
+  WeaponRoom(figure::Explorer &explorer) : Room(RoomType::weapon, explorer){};
+  bool enter_room() override { return true; };
 };
 
 } // namespace room

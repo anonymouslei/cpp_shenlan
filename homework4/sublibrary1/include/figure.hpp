@@ -1,8 +1,25 @@
 #pragma once
 #include "util.hpp"
+#include <memory>
+#include <vector>
 
 namespace homework {
 namespace figure {
+using namespace util;
+
+struct Buff {
+  Buff(int num, int health) : remaining_num_(num), health_(health){};
+  int remaining_num_;
+  int health_;
+};
+
+struct CommonBuff : public Buff {
+  CommonBuff() : Buff(2, 5){};
+};
+
+struct TrapBuff : public Buff {
+  TrapBuff() : Buff(5, -2){};
+};
 
 class Human {
 public:
@@ -34,11 +51,17 @@ public:
   //  void print_info() const override ;
   int get_experience() const;
   void add_experience(const int experience);
-
   std::string get_name() const override;
+  void refill_health();
+  void refill_health(int health);
+
+  void get_buffer(util::RoomType room_type);
+  bool apply_buffer();
+  void eraser_buffer();
 
 private:
   int experience_;
+  std::vector<std::shared_ptr<Buff>> buffers_;
 };
 
 class Monster : public Human {

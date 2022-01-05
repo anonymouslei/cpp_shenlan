@@ -22,8 +22,8 @@ util::RoomType generate_room_type() {
 Game::Game() { explorer_ = figure::Explorer(); }
 
 std::shared_ptr<room::Room> Game::create_room() {
-  //  util::RoomType room_type = generate_room_type();
-  util::RoomType room_type = util::RoomType::common;
+  util::RoomType room_type = generate_room_type();
+  //  util::RoomType room_type = util::RoomType::common;
   std::cout << "enter " << room_type << " room\n";
   switch (room_type) {
   case util::RoomType::camp:
@@ -43,11 +43,12 @@ void Game::run() {
   while (1) {
     // create room
     std::shared_ptr<room::Room> new_room = create_room();
-    std::shared_ptr<util::Buff> new_buffer = new_room->create_buffer();
-    buffers_.emplace_back(new_buffer);
+    //    std::shared_ptr<room::Buff> new_buffer = new_room->create_buffer();
+    //    buffers_.emplace_back(new_buffer);
 
     // enter room
-    new_room->enter_room(buffers_);
+    if (!new_room->enter_room())
+      break;
 
     // run room
     if (!new_room->run())

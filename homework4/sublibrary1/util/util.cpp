@@ -26,10 +26,6 @@ std::ostream &operator<<(std::ostream &os, RoomType c) {
   return os;
 }
 
-void Buff::apply_buffer() {
-  std::cout << "apply buffer\n";
-}
-
 int generate_random_num(const int begin, const int end) {
   std::experimental::reseed();
   return std::experimental::randint(begin, end);
