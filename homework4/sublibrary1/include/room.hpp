@@ -14,13 +14,11 @@
 namespace homework {
 namespace room {
 
-
-
 class Room {
 public:
   Room(util::RoomType room_type, figure::Explorer &explorer)
       : room_type_(room_type), explorer_(explorer){};
-//  ~Room();
+  //  ~Room();
 
   virtual bool enter_room(std::vector<std::shared_ptr<util::Buff>> &buffers);
   virtual void battle();
@@ -41,7 +39,7 @@ private:
 class Camp : public Room {
 public:
   Camp(figure::Explorer &explorer) : Room(util::RoomType::camp, explorer){};
-//  ~Camp();
+  //  ~Camp();
 };
 
 class CommonRoom : public Room {
@@ -56,12 +54,14 @@ public:
 
 class HeaderRoom : public Room {
 public:
-  HeaderRoom(figure::Explorer &explorer) : Room(util::RoomType::header, explorer){};
+  HeaderRoom(figure::Explorer &explorer)
+      : Room(util::RoomType::header, explorer){};
 };
 
 class WeaponRoom : public Room {
 public:
-  WeaponRoom(figure::Explorer &explorer) : Room(util::RoomType::weapon, explorer){};
+  WeaponRoom(figure::Explorer &explorer)
+      : Room(util::RoomType::weapon, explorer){};
 };
 
 } // namespace room
