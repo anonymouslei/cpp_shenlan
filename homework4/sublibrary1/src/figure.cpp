@@ -14,20 +14,21 @@ bool Human::is_dead() {
   return false;
 }
 
-int Human::get_attack_value() const { return attack_; }
+int Human::get_attack_value() { return attack_; }
 
 int Human::get_health_value() const { return health_; }
 
 void Human::refill_health() {
   health_ = 100;
-  std::cout << "refill " << get_name() << "full health, health (100/100)\n"; //TODO:
+  std::cout << "refill " << get_name()
+            << "full health, health (100/100)\n"; // TODO:
 }
 
 void Human::refill_health(int health) {
   health_ += health;
   health_ = health_ > initial_health_ ? initial_health_ : health_;
-  std::cout << "refill " << get_name() << " " << health << " health, health (" << health_
-            << "/" << initial_health_ << ")\n";
+  std::cout << "refill " << get_name() << " " << health << " health, health ("
+            << health_ << "/" << initial_health_ << ")\n";
 }
 
 void Explorer::add_experience(const int experience) {
@@ -39,24 +40,34 @@ void Explorer::add_experience(const int experience) {
   }
 }
 
+void Explorer::set_health(const int health) { health_ = health; }
+
 int Explorer::get_experience() const { return experience_; }
 
+int Explorer::get_attack_value() {
+  int attack;
+  int weapon_attack = 0;
+  if (has_weapon_) {
+    weapon_attack = weapon_->use_weapon();
+    attack = attack_ + weapon_attack;
+  } else
+    attack = attack_;
+  if (has_weapon_ && weapon_attack == 0) {
+    has_weapon_ = false;
+  }
+
+  return attack;
+}
 std::string Explorer::get_name() const { return "explorer"; }
 
 void Explorer::get_buffer(RoomType room_type) {
   switch (room_type) {
-    //  case RoomType::camp:
-    //    buffers_.emplace_back(std::make_shared<CampBuff>());
-    //    return;
   case RoomType::common:
     buffers_.emplace_back(std::make_shared<CommonBuff>());
     return;
   case RoomType::trap:
     buffers_.emplace_back(std::make_shared<TrapBuff>());
     return;
-    //  case RoomType::header:
-    //    buffers_.emplace_back(std::make_shared<HeaderBuff>());
-    //    return;
   default:
     return;
   }
@@ -78,6 +89,12 @@ bool Explorer::apply_buffer() {
 }
 
 void Explorer::eraser_buffer() { buffers_.clear(); };
+
+void Explorer::get_weapon(std::unique_ptr<weapon::Weapon1> weapon) {
+  has_weapon_ = true;
+  weapon_ = std::move(weapon);
+  std::cout << "explorer get a weapon: " << weapon_->type_ << std::endl;
+}
 
 Monster::Monster() : Human(5 * 2, 10 * 2) {
   serial_ = 1;

@@ -4,7 +4,7 @@ project(sublibrary1)
 include_directories(${PROJECT_SOURCE_DIR}/util)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-add_library(${PROJECT_NAME} src/figure.cpp src/game.cpp src/room.cpp)
+add_library(${PROJECT_NAME} src/figure.cpp src/game.cpp src/room.cpp src/weapon.cpp)
 add_library(sub::lib1 ALIAS ${PROJECT_NAME})
 
 add_subdirectory(util)

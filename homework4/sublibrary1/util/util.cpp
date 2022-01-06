@@ -30,5 +30,5 @@ int generate_random_num(const int begin, const int end) {
   std::experimental::reseed();
   return std::experimental::randint(begin, end);
 }
-}
-}
+} // namespace util
+} // namespace homework

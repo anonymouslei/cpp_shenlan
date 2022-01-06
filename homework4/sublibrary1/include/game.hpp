@@ -16,9 +16,7 @@ util::RoomType generate_room_type();
 class Game {
 public:
   Game();
-  //  ~Game();
 
-  //  void init();
   std::shared_ptr<room::Room> create_room();
   void run();
   void summary() const;

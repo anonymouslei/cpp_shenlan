@@ -10,6 +10,7 @@
 
 #include "figure.hpp"
 #include "util.hpp"
+#include "weapon.hpp"
 
 namespace homework {
 namespace room {
@@ -20,7 +21,6 @@ class Room {
 public:
   Room(RoomType room_type, figure::Explorer &explorer)
       : room_type_(room_type), explorer_(explorer){};
-  //  ~Room();
 
   virtual bool enter_room() = 0;
   virtual void battle();
@@ -30,7 +30,7 @@ public:
 
 protected:
   std::vector<std::shared_ptr<figure::Monster>> monsters_;
-  int monster_num_=0;
+  int monster_num_ = 0;
   figure::Explorer &explorer_;
 
 private:
@@ -40,7 +40,6 @@ private:
 class Camp : public Room {
 public:
   Camp(figure::Explorer &explorer) : Room(RoomType::camp, explorer){};
-  //  ~Camp();
   bool enter_room() override;
 };
 
@@ -58,7 +57,7 @@ public:
 
 class HeaderRoom : public Room {
 public:
-  HeaderRoom(figure::Explorer &explorer) : Room(RoomType::header, explorer){};
+  HeaderRoom(figure::Explorer &explorer);
   bool enter_room() override;
   void settlement() const override;
   void battle() override;
@@ -66,8 +65,18 @@ public:
 
 class WeaponRoom : public Room {
 public:
-  WeaponRoom(figure::Explorer &explorer) : Room(RoomType::weapon, explorer){};
-  bool enter_room() override { return true; };
+  WeaponRoom(figure::Explorer &explorer);
+  bool enter_room() override;
+  void settlement() const override;
+  void battle() override;
+  void create_weapon();
+  std::unique_ptr<weapon::Weapon1>
+  create_weapon(const weapon::WeaponType weapon_type) const;
+  int use_weapon() { return weapon_->use_weapon(); };
+
+private:
+  std::unique_ptr<weapon::Weapon1> weapon_;
+  int explorer_health_;
 };
 
 } // namespace room
