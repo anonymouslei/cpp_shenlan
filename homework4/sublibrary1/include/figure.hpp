@@ -25,7 +25,7 @@ class Human {
 public:
   Human() : attack_(0), health_(0){};
   Human(const int attack, const int health)
-      : attack_(attack), health_(health){};
+      : attack_(attack), health_(health), initial_health_(health){};
   //  ~Human();
   //  virtual void print_info() const ;
   virtual bool is_dead();
@@ -34,13 +34,17 @@ public:
 
   virtual int get_attack_value() const;
   virtual int get_health_value() const;
+  virtual int get_initial_health() { return initial_health_; };
+  virtual void enhance_attack_power() {};
+  virtual void refill_health();
+  virtual void refill_health(int health);
+  virtual bool get_buff() {return false;};
 
 protected:
   int health_;
+  int attack_;
+  int initial_health_;
   bool dead_ = false;
-
-private:
-  int attack_; // TODO: rename to attack
 };
 
 class Explorer : public Human {
@@ -52,8 +56,6 @@ public:
   int get_experience() const;
   void add_experience(const int experience);
   std::string get_name() const override;
-  void refill_health();
-  void refill_health(int health);
 
   void get_buffer(util::RoomType room_type);
   bool apply_buffer();
@@ -68,25 +70,28 @@ class Monster : public Human {
 public:
   Monster();
   Monster(const int serial);
+  Monster(const int attack, const int health): Human(attack, health){};
   //  ~Monster();
   //  void print_info() const override ;
   std::string get_name() const override;
   int get_serial() { return serial_; };
-  int get_initial_health() { return initial_health_; };
   bool is_dead() override;
 
-protected:
-  int initial_health_;
-
 private:
-  int serial_;
+  int serial_=1;
 };
 
 class MonsterHeader : public Monster {
 public:
-  MonsterHeader(){}; // TODO:
+  MonsterHeader();
+  std::string get_name() const override;
+  void enhance_attack_power();
+  bool get_buff() override {return buff_;};
+  void refill_health() override;
   //  ~MonsterHeader();
   //  void print_info() const override;
+private:
+  bool buff_ = true;
 };
 
 } // namespace figure

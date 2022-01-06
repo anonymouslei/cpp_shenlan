@@ -18,6 +18,18 @@ int Human::get_attack_value() const { return attack_; }
 
 int Human::get_health_value() const { return health_; }
 
+void Human::refill_health() {
+  health_ = 100;
+  std::cout << "refill " << get_name() << "full health, health (100/100)\n"; //TODO:
+}
+
+void Human::refill_health(int health) {
+  health_ += health;
+  health_ = health_ > initial_health_ ? initial_health_ : health_;
+  std::cout << "refill " << get_name() << " " << health << " health, health (" << health_
+            << "/" << initial_health_ << ")\n";
+}
+
 void Explorer::add_experience(const int experience) {
   experience_ += experience;
   if (experience_ > 10) {
@@ -30,18 +42,6 @@ void Explorer::add_experience(const int experience) {
 int Explorer::get_experience() const { return experience_; }
 
 std::string Explorer::get_name() const { return "explorer"; }
-
-void Explorer::refill_health() {
-  health_ = 100;
-  std::cout << "refill explore full health, health (100/100)\n";
-}
-
-void Explorer::refill_health(int health) {
-  health_ += health;
-  health_ = health_ > 100 ? 100 : health_;
-  std::cout << "refill explore " << health << " health, health (" << health_
-            << "/100)\n";
-}
 
 void Explorer::get_buffer(RoomType room_type) {
   switch (room_type) {
@@ -79,18 +79,23 @@ bool Explorer::apply_buffer() {
 
 void Explorer::eraser_buffer() { buffers_.clear(); };
 
+Monster::Monster() : Human(5 * 2, 10 * 2) {
+  serial_ = 1;
+  std::cout << "monster" << serial_ << " (" << initial_health_ << "/"
+            << initial_health_ << ") ";
+}
+
 Monster::Monster(const int serial)
-    : Human(util::generate_random_num(3, 7), util::generate_random_num(6, 14)),
-      initial_health_(health_) {
+    : Human(util::generate_random_num(3, 7), util::generate_random_num(6, 14)) {
   serial_ = serial;
-  std::cout << "monster" << serial << " (" << initial_health_ << "/"
+  std::cout << "monster" << serial_ << " (" << initial_health_ << "/"
             << initial_health_ << ") ";
 };
 
 std::string Monster::get_name() const { return "monster"; }
 
 bool Monster::is_dead() {
-  if (health_ < 0) {
+  if (health_ < 1) {
     dead_ = true;
     std::cout << get_name() << serial_ << " is dead\n";
     return true;
@@ -98,5 +103,15 @@ bool Monster::is_dead() {
   return false;
 }
 
+MonsterHeader::MonsterHeader() : Monster(15, 40) {}
+
+std::string MonsterHeader::get_name() const { return "MonsterHeader"; }
+
+void MonsterHeader::enhance_attack_power() { attack_ += 1; }
+
+void MonsterHeader::refill_health() {
+  refill_health();
+  buff_ = false;
+}
 } // namespace figure
 } // namespace homework

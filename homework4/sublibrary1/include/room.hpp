@@ -24,8 +24,7 @@ public:
 
   virtual bool enter_room() = 0;
   virtual void battle();
-  //  virtual std::shared_ptr<Buff> create_buffer();
-  virtual void settlement();
+  virtual void settlement() const;
   virtual bool run();
   virtual void is_monsters_dead();
 
@@ -53,7 +52,7 @@ public:
 
 class TrapRoom : public Room {
 public:
-  TrapRoom(figure::Explorer &explorer) : Room(RoomType::trap, explorer){};
+  TrapRoom(figure::Explorer &explorer);
   bool enter_room() override;
 };
 
@@ -61,6 +60,8 @@ class HeaderRoom : public Room {
 public:
   HeaderRoom(figure::Explorer &explorer) : Room(RoomType::header, explorer){};
   bool enter_room() override;
+  void settlement() const override;
+  void battle() override;
 };
 
 class WeaponRoom : public Room {

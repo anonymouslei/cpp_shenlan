@@ -21,7 +21,7 @@ public:
   //  void init();
   std::shared_ptr<room::Room> create_room();
   void run();
-  //  void summary();
+  void summary() const;
 
 private:
   figure::Explorer explorer_;

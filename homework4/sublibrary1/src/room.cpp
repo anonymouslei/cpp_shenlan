@@ -3,17 +3,6 @@
 namespace homework {
 namespace room {
 
-// bool Room::enter_room( // TODO:
-//    std::vector<std::shared_ptr<Buff>> &buffers) {
-//   enter
-//  for (auto i = buffers.end() - 1; i >= buffers.begin(); i--) {
-//    (*i)->apply_buffer();
-//  }
-//  if (explorer_.is_dead())
-//    return false;
-//  return true;
-//}
-
 void Room::battle() {
   std::shared_ptr<figure::Monster> monster = *(monsters_.begin());
   monster->attacked(explorer_.get_attack_value());
@@ -33,7 +22,7 @@ void Room::battle() {
   }
 }
 
-void Room::settlement() {
+void Room::settlement() const {
   // explorer get experience
   // print explorer health and experience
   std::cout << "explore get " << monster_num_ << " points experience, ";
@@ -66,8 +55,6 @@ void Room::is_monsters_dead() {
 
 bool Camp::enter_room() {
   explorer_.refill_health();
-//  if (!explorer_.apply_buffer())
-//    return false;
   return explorer_.apply_buffer();
 }
 
@@ -98,6 +85,13 @@ bool CommonRoom::enter_room() {
   return true;
 }
 
+TrapRoom::TrapRoom(figure::Explorer &explorer)
+    : Room(RoomType::trap, explorer) {
+  monster_num_ = 1;
+  std::cout << "meet " << monster_num_ << " monster, ";
+  monsters_.emplace_back(std::make_shared<figure::Monster>());
+}
+
 bool TrapRoom::enter_room() {
   explorer_.refill_health(-explorer_.get_health_value() * 0.1);
   explorer_.apply_buffer();
@@ -113,5 +107,36 @@ bool HeaderRoom::enter_room() {
   return true;
 }
 
+void HeaderRoom::settlement() const {
+  // explorer get experience
+  // print explorer health and experience
+  std::cout << "explore get " << monster_num_ * 5 << " points experience, ";
+  explorer_.add_experience(monster_num_ * 5);
+  std::cout << "experience (" << explorer_.get_experience() << "/10)\n";
+}
+
+void HeaderRoom::battle() {
+  std::shared_ptr<figure::Monster> monster = *(monsters_.begin());
+
+  monster->attacked(explorer_.get_attack_value());
+  std::cout << "Explorer attack monster" << monster->get_serial() << ", cause "
+            << explorer_.get_attack_value() << " points damage, Monster"
+            << monster->get_serial() << " (" << monster->get_health_value()
+            << "/" << monster->get_initial_health() << ")\n"; // TODO: func
+  is_monsters_dead();
+  if (monsters_.empty())
+    return;
+
+  if (monster->get_health_value() <= 9 && monster->get_buff()) {
+    monster->refill_health(20);
+  } else {
+    monster->enhance_attack_power();
+    int damage = (monster)->get_attack_value();
+    explorer_.attacked(damage);
+    std::cout << "MonsterHeader" << (monster)->get_serial() << " attack explorer, cause "
+              << damage << " points damage, Explorer ("
+              << explorer_.get_health_value() << "/100)\n";
+  }
+}
 } // namespace room
 } // namespace homework
