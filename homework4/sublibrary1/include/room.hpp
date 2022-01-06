@@ -31,7 +31,7 @@ public:
 
 protected:
   std::vector<std::shared_ptr<figure::Monster>> monsters_;
-  int monster_num_;
+  int monster_num_=0;
   figure::Explorer &explorer_;
 
 private:

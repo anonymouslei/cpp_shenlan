@@ -42,6 +42,7 @@ void Room::settlement() {
 }
 
 bool Room::run() {
+  std::cout << "***** debug: run" << std::endl;
   while (!monsters_.empty()) {
     // battle
     battle();
@@ -65,9 +66,9 @@ void Room::is_monsters_dead() {
 
 bool Camp::enter_room() {
   explorer_.refill_health();
-  if (explorer_.apply_buffer())
-    return false;
-  return true;
+//  if (!explorer_.apply_buffer())
+//    return false;
+  return explorer_.apply_buffer();
 }
 
 CommonRoom::CommonRoom(figure::Explorer &explorer)

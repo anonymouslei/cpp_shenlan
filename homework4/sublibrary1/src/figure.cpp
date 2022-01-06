@@ -20,7 +20,11 @@ int Human::get_health_value() const { return health_; }
 
 void Explorer::add_experience(const int experience) {
   experience_ += experience;
-  experience_ = experience_ > 10 ? experience - 10 : experience_;
+  if (experience_ > 10) {
+    experience_ -= 10;
+    std::cout << "experience is greater than 10, upgrade.\n";
+    refill_health();
+  }
 }
 
 int Explorer::get_experience() const { return experience_; }
@@ -29,7 +33,7 @@ std::string Explorer::get_name() const { return "explorer"; }
 
 void Explorer::refill_health() {
   health_ = 100;
-  std::cout << "refill explore full health, health (100/100)";
+  std::cout << "refill explore full health, health (100/100)\n";
 }
 
 void Explorer::refill_health(int health) {
