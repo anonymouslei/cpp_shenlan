@@ -1,4 +1,5 @@
 #include <initializer_list>
+#include <concepts>
 #include <iostream>
 #include <vector>
 #include <cassert>
@@ -10,11 +11,24 @@ concept IsAvail = !std::is_pointer_v<T> ||
                   !std::is_reference_v<T>;
 
 template<typename T>
-concept Addable = requires (T a) {
-    a + a;
+concept Addable = requires (T a, T b)
+{
+  a + b;
 };
 
+template<typename T>
+concept Mulable = requires (T a, T b)
+{
+  a * b;
+};
+
+template<typename T>
+concept Subable = requires (T a, T b)
+{
+  a - b;
+};
 template <IsAvail T>
+//requires Addable<T>// && Mulable<T> && Subable<T>
 class Matrix {
 public:
   Matrix() {
@@ -24,13 +38,10 @@ public:
   }
 
     Matrix(const Matrix& x): row_(x.row_), col_(x.col_),
-    elements_(x.elements_) {
-      std::cout << "copy constructor\n";
-    }
+    elements_(x.elements_) {}
 
     Matrix(Matrix&& x) noexcept : row_(x.row_), col_(x.col_),
-    elements_(x.elements_) { std::cout << "move constructor\n";
-                                                              };
+    elements_(x.elements_) {};
 
   Matrix(int row, int col) : row_(row), col_(col) {
     for (int i = 0; i < row * col; ++i) {
@@ -134,13 +145,12 @@ private:
   int col_;
 };
 
-// template<typename T>
-// requires Addable<T>
-// T operator+(const T& lhs, T& rhs) {
-//   std::cout << "outside add\n";
-//   return lhs + rhs;
-//}
-
+struct AddOnly {
+//  int v;
+//  friend auto operator + (const AddOnly& lhs, const AddOnly& rhs) {
+//    return AddOnly{lhs.v + rhs.v};
+//  }
+};
 int main() {
   Matrix<int> matrix(2, 3);
   Matrix<int> mat1;
@@ -184,17 +194,12 @@ int main() {
   std::cout << "mat_res_mul: \n";
   mat_res_mul.print();
 
-//  struct AddOnly {
-//    int v;
-//    AddOnly operator + (AddOnly& rop) {
-//      return AddOnly{v + rop.v};
-//    }
-//  };
-//  Matrix<AddOnly> mat;
+  Matrix<int> mat_move = std::move(mat3);
+  std::cout << "mat move: \n";
+  mat_move.print();
+
+  Matrix<AddOnly> mat;
 //  mat + mat;
-  //    Matrix<int> mat_move = std::move(mat3);
-  //    std::cout << "mat move: \n";
-  //    mat_move.print();
 
   return 0;
 }
