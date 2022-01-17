@@ -5,6 +5,11 @@
 #include <cassert>
 #include <memory>
 
+enum Type {
+  Row,
+  Col
+};
+
 template<typename T>
 concept IsAvail = !std::is_pointer_v<T> ||
                   !std::is_void_v<T> ||
@@ -93,6 +98,7 @@ public:
 
   // add()
   friend auto operator+(const Matrix<T> &lhs, Matrix<T> &rhs) {
+    static_assert(Addable<T>, "is not add able");
     if ((lhs.row_ == rhs.row_) && (lhs.col_ == rhs.col_)) {
       Matrix<T> matrix(lhs.row_, lhs.col_);
       auto size = lhs.elements_.size();
@@ -106,6 +112,7 @@ public:
   };
   // Subtraction()
   friend auto operator-(const Matrix &lhs, const Matrix &rhs) {
+    static_assert(Subable<T>, "is not sub able");
     if ((lhs.row_ == rhs.row_) && (lhs.col_ == rhs.col_)) {
       Matrix matrix(lhs.row_, lhs.col_);
       auto size = lhs.elements_.size();
@@ -119,6 +126,7 @@ public:
   }
   // mul
   friend auto operator*(const Matrix &lhs, const Matrix &rhs) {
+    static_assert(Mulable<T>, "is not mul able");
     if (lhs.col_ == rhs.row_) {
       Matrix matrix(lhs.row_, rhs.col_);
       for (int i = 0; i < lhs.row_ * rhs.col_; ++i) { // k
@@ -126,7 +134,6 @@ public:
           for (int k = 0; k < rhs.col_; ++k) {        // j
             matrix.at(i) = 1; // += lhs.elements_.at(j*lhs.col_+k) +
                               // rhs.elements_.at(i*rhs.col_+k);
-            // TODO:
           }
         }
       }

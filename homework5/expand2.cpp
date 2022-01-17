@@ -14,6 +14,12 @@ struct Matrix {
     }
   }
 
+  Matrix(int row, int col): row_(row), col_(col) {
+    for (int i = 0; i < row * col; ++i) {
+      elements_.push_back(T{});
+    }
+  }
+
   Matrix(std::initializer_list<T> l) : elements_(l) {
     elements_.resize(col_*row_);
   }
@@ -43,7 +49,6 @@ struct Matrix {
     return res;
   }
 
-
   //add
   friend auto operator+(const Matrix &lhs, Matrix &rhs) {
     if ((lhs.row_ == rhs.row_) && (lhs.col_ == rhs.col_)) {
@@ -71,19 +76,19 @@ struct Matrix {
     }
   }
   // *
-  friend auto operator*(const Matrix &lhs, const Matrix &rhs) { //TODO: not finished
-    if (lhs.col_ == rhs.row_) {
-      Matrix matrix(lhs.row_, rhs.col_);
-      for (int i = 0; i < lhs.row_ * rhs.col_; ++i) { // k
-        for (int j = 0; j < lhs.row_; ++j) {          // i
+  template <int N_row, int N_col>
+  Matrix<T, T_row, N_col> operator*(const Matrix<T, N_row, N_col> &rhs) {
+    static_assert(T_col == N_row, "dimension is not satisfied");
+    if (col_ == rhs.row_) {
+      Matrix<T, T_row, N_col> matrix(T_row, rhs.col_);
+      for (int i = 0; i < this->row_ * rhs.col_; ++i) { // k
+        for (int j = 0; j < this->row_; ++j) {          // i
           for (int k = 0; k < rhs.col_; ++k) {        // j
-            matrix.at(i) = 1; // += lhs.elements_.at(j*lhs.col_+k) +
+            matrix.elements_.at(i) = 1; // += lhs.elements_.at(j*lhs.col_+k) +
             // rhs.elements_.at(i*rhs.col_+k);
-            // TODO:
           }
         }
       }
-      std::cout << "debug 0" << std::endl;
       return matrix;
     } else {
       throw std::logic_error("dimension is not equal\n");
@@ -111,7 +116,8 @@ struct Matrix {
 int main() {
   Matrix<int, 2, 3> mat1{1,2,3,4,5};
   Matrix<int, 3, 2> mat2{1,0,0,1};
-//  Matrix<int, 2, 2> res = mat1*mat2;
+  Matrix<int, 2, 2> res = mat1*mat2;
+  res.print();
 
   std::cout << "mat1: \n";
   mat1.print();
