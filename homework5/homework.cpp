@@ -33,7 +33,6 @@ concept Subable = requires (T a, T b)
   a - b;
 };
 template <IsAvail T>
-//requires Addable<T>// && Mulable<T> && Subable<T>
 class Matrix {
 public:
   Matrix() {

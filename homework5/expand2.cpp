@@ -5,7 +5,8 @@
 
 template<typename T, int T_row, int T_col>
 requires ((T_row > 0) && (T_col > 0))
-struct Matrix {
+class Matrix {
+public:
   // constructor Matric<int, 2,3>
   Matrix() {
     elements_ = std::vector<T>();
@@ -44,7 +45,7 @@ struct Matrix {
     Matrix<T, C_row, C_col> res;
     elements_.resize(C_col * C_row);
     for (int i = 0; i < C_row*C_col; ++i) {
-      res.elements_.at(i) = elements_.at(i);
+      res.at(i) = elements_.at(i);
     }
     return res;
   }
@@ -79,20 +80,16 @@ struct Matrix {
   template <int N_row, int N_col>
   Matrix<T, T_row, N_col> operator*(const Matrix<T, N_row, N_col> &rhs) {
     static_assert(T_col == N_row, "dimension is not satisfied");
-    if (col_ == rhs.row_) {
-      Matrix<T, T_row, N_col> matrix(T_row, rhs.col_);
-      for (int i = 0; i < this->row_ * rhs.col_; ++i) { // k
+      Matrix<T, T_row, N_col> matrix(T_row, N_col);
+      for (int i = 0; i < this->row_ * N_col; ++i) { // k
         for (int j = 0; j < this->row_; ++j) {          // i
-          for (int k = 0; k < rhs.col_; ++k) {        // j
-            matrix.elements_.at(i) = 1; // += lhs.elements_.at(j*lhs.col_+k) +
+          for (int k = 0; k < N_col; ++k) {        // j
+            matrix.at(i) = 1; // += lhs.elements_.at(j*lhs.col_+k) +
             // rhs.elements_.at(i*rhs.col_+k);
           }
         }
       }
       return matrix;
-    } else {
-      throw std::logic_error("dimension is not equal\n");
-    }
   }
 
   void print() const {
@@ -108,6 +105,7 @@ struct Matrix {
     std::cout << std::endl;
   }
 
+private:
   int row_ = T_row;
   int col_ = T_col;
   std::vector<T> elements_;
