@@ -1,39 +1,22 @@
-#include <initializer_list>
-#include <concepts>
-#include <iostream>
-#include <vector>
 #include <cassert>
+#include <concepts>
+#include <initializer_list>
+#include <iostream>
 #include <memory>
+#include <vector>
 
-enum Type {
-  Row,
-  Col
-};
+enum Type { Row, Col };
 
-template<typename T>
-concept IsAvail = !std::is_pointer_v<T> ||
-                  !std::is_void_v<T> ||
-                  !std::is_reference_v<T>;
+template <typename T>
+concept IsAvail =
+    !std::is_pointer_v<T> || !std::is_void_v<T> || !std::is_reference_v<T>;
 
-template<typename T>
-concept Addable = requires (T a, T b)
-{
-  a + b;
-};
+template <typename T> concept Addable = requires(T a, T b) { a + b; };
 
-template<typename T>
-concept Mulable = requires (T a, T b)
-{
-  a * b;
-};
+template <typename T> concept Mulable = requires(T a, T b) { a *b; };
 
-template<typename T>
-concept Subable = requires (T a, T b)
-{
-  a - b;
-};
-template <IsAvail T>
-class Matrix {
+template <typename T> concept Subable = requires(T a, T b) { a - b; };
+template <IsAvail T> class Matrix {
 public:
   Matrix() {
     row_ = 1;
@@ -41,11 +24,11 @@ public:
     elements_ = std::vector<T>();
   }
 
-    Matrix(const Matrix& x): row_(x.row_), col_(x.col_),
-    elements_(x.elements_) {}
+  Matrix(const Matrix &x)
+      : row_(x.row_), col_(x.col_), elements_(x.elements_) {}
 
-    Matrix(Matrix&& x) noexcept : row_(x.row_), col_(x.col_),
-    elements_(x.elements_) {};
+  Matrix(Matrix &&x) noexcept
+      : row_(x.row_), col_(x.col_), elements_(x.elements_){};
 
   Matrix(int row, int col) : row_(row), col_(col) {
     for (int i = 0; i < row * col; ++i) {
@@ -144,18 +127,50 @@ public:
   }
 
   //需要满足std::move
-  std::vector<T> elements_;
+  [[nodiscard]] int get_row() const {
+    return row_;
+  }[[nodiscard]] int get_col() const {
+    return col_;
+  }
 
 private:
   int row_;
   int col_;
+  std::vector<T> elements_;
 };
 
+template <typename T>
+Matrix<T> concatenate(Matrix<T> mat1, Matrix<T> mat2, Type type) {
+  int mat1_size = mat1.get_row() * mat1.get_col();
+  int mat2_size = mat2.get_row() * mat2.get_col();
+  if (type == Type::Row) {
+    assert((mat1.get_col() == mat2.get_col()));
+    Matrix<T> matrix(mat1.get_row() + mat2.get_row(), mat1.get_col());
+    for (int i = 0; i < mat1_size; ++i) {
+      matrix.at(i) = mat1.at(i);
+    }
+    for (int i = 0; i < mat2_size; ++i) {
+      matrix.at(i + mat1_size) = mat2.at(i);
+    }
+    return matrix;
+  } else {
+    assert((mat1.get_row() == mat2.get_row()));
+    Matrix<T> matrix(mat1.get_row(), mat1.get_col() + mat2.get_col());
+    for (int i = 0; i < mat1_size; ++i) {
+      matrix.at(i) = mat1.at(i);
+    }
+    for (int i = 0; i < mat2_size; ++i) {
+      matrix.at(i + mat1_size) = mat2.at(i);
+    }
+    return matrix;
+  }
+}
+
 struct AddOnly {
-//  int v;
-//  friend auto operator + (const AddOnly& lhs, const AddOnly& rhs) {
-//    return AddOnly{lhs.v + rhs.v};
-//  }
+  //  int v;
+  //  friend auto operator + (const AddOnly& lhs, const AddOnly& rhs) {
+  //    return AddOnly{lhs.v + rhs.v};
+  //  }
 };
 int main() {
   Matrix<int> matrix(2, 3);
@@ -163,10 +178,10 @@ int main() {
   Matrix<int> mat2(2, 2);
   //  matrix.col_ = 3;
   //  matrix.row_ = 2;
-  matrix.elements_.push_back(1);
-  matrix.elements_.push_back(2);
-  matrix.elements_.push_back(3);
-  matrix.elements_.push_back(4);
+  matrix.push_back(1);
+  matrix.push_back(2);
+  matrix.push_back(3);
+  matrix.push_back(4);
   std::cout << matrix[1][0] << std::endl;
   matrix[1][0] = 8;
   std::cout << matrix[1][0] << std::endl;
@@ -192,9 +207,9 @@ int main() {
   mat3.print();
   mat4.print();
 
-    Matrix<int> mat_res = mat3 + mat3;
-    std::cout << "mat_res: \n";
-    mat_res.print();
+  Matrix<int> mat_res = mat3 + mat3;
+  std::cout << "mat_res: \n";
+  mat_res.print();
 
   Matrix<int> mat_res_mul = mat3 * mat4;
   std::cout << "mat_res_mul: \n";
@@ -205,7 +220,13 @@ int main() {
   mat_move.print();
 
   Matrix<AddOnly> mat;
-//  mat + mat;
+  //  mat + mat;
+
+  Matrix<int> mat11(2, 2);
+  Matrix<int> mat22(2, 2);
+  Matrix<int> mat33(3, 3);
+  Matrix<int> res = concatenate(mat11, mat22, Type::Col);
+  res.print();
 
   return 0;
 }
