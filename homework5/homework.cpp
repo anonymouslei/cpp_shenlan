@@ -12,10 +12,9 @@ concept IsAvail =
     !std::is_pointer_v<T> || !std::is_void_v<T> || !std::is_reference_v<T>;
 
 template <typename T> concept Addable = requires(T a, T b) { a + b; };
-
 template <typename T> concept Mulable = requires(T a, T b) { a *b; };
-
 template <typename T> concept Subable = requires(T a, T b) { a - b; };
+
 template <IsAvail T> class Matrix {
 public:
   Matrix() {
@@ -28,7 +27,7 @@ public:
       : row_(x.row_), col_(x.col_), elements_(x.elements_) {}
 
   Matrix(Matrix &&x) noexcept
-      : row_(x.row_), col_(x.col_), elements_(x.elements_){};
+      : row_(x.row_), col_(x.col_), elements_(x.elements_) {};
 
   Matrix(int row, int col) : row_(row), col_(col) {
     for (int i = 0; i < row * col; ++i) {
@@ -56,10 +55,7 @@ public:
 
   void push_back(T item) { elements_.emplace_back(item); };
   //因为存在at和Push_back这两个函数，证明我们在存储matrix的元素的时候也应该是按行展开进行的存储
-  void reshape(int row,
-               int column) // 可以使用 reshape()修改矩阵尺寸，
-                           // 多余的元素会被删除， 缺少的元素会使用默认值填充
-  {
+  void reshape(int row, int column) {
     elements_.resize(row * column);
     row_ = row;
     col_ = column;
@@ -111,7 +107,7 @@ public:
     static_assert(Mulable<T>, "is not mul able");
     if (lhs.col_ == rhs.row_) {
       Matrix matrix(lhs.row_, rhs.col_);
-      for (int i = 0; i < lhs.row_ * rhs.col_; ++i) { // k
+      for (int i = 0; i < lhs.row_ * rhs.col_; ++i) {
         for (int j = 0; j < lhs.row_; ++j) {          // i
           for (int k = 0; k < rhs.col_; ++k) {        // j
             matrix.at(i) = 1; // += lhs.elements_.at(j*lhs.col_+k) +
