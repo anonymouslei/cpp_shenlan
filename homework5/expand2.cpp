@@ -1,12 +1,9 @@
 #include <iostream>
 #include <vector>
 
-// the element of matix will be stored as array
-
 template <typename T, int T_row, int T_col>
 requires((T_row > 0) && (T_col > 0)) class Matrix {
 public:
-  // constructor Matric<int, 2,3>
   Matrix() {
     elements_ = std::vector<T>();
     for (int i = 0; i < row_ * col_; ++i) {
@@ -35,7 +32,7 @@ public:
   // at
   T &at(std::size_t idx) {
     return elements_.at(idx);
-  } // 可以使用 at 访问矩阵按行展开后对应的元素
+  }
   const T &at(std::size_t idx) const { return elements_.at(idx); }
 
   // reshape
@@ -49,30 +46,28 @@ public:
   }
 
   // add
-  friend auto operator+(const Matrix &lhs, Matrix &rhs) {
-    if ((lhs.row_ == rhs.row_) && (lhs.col_ == rhs.col_)) {
-      Matrix matrix(lhs.row_, lhs.col_);
-      auto size = lhs.elements_.size();
-      for (int i = 0; i < size; ++i) {
-        matrix.elements_.at(i) = lhs.elements_.at(i) + rhs.elements_.at(i);
-      }
-      return matrix;
-    } else {
-      throw std::logic_error("dimension is not equal\n");
+  template <int N_row, int N_col>
+  Matrix<T, T_row, T_col> operator+(const Matrix<T, N_row, N_col> &rhs) {
+    static_assert(T_col == N_col, "col is not equal");
+    static_assert(T_row == N_row, "row is not equal");
+    Matrix matrix(this->row_, this->col_);
+    auto size = this->elements_.size();
+    for (int i = 0; i < size; ++i) {
+      matrix.elements_.at(i) = this->elements_.at(i) + rhs.elements_.at(i);
     }
+    return matrix;
   };
   // -
-  friend auto operator-(const Matrix<T, T_row, T_col> &lhs, const Matrix &rhs) {
-    if ((lhs.row_ == rhs.row_) && (lhs.col_ == rhs.col_)) {
-      Matrix matrix(lhs.row_, lhs.col_);
-      auto size = lhs.elements_.size();
-      for (int i = 0; i < size; ++i) {
-        matrix.elements_.at(i) = lhs.elements_.at(i) - rhs.elements_.at(i);
-      }
-      return matrix;
-    } else {
-      throw std::logic_error("dimension is not equal\n");
+  template <int N_row, int N_col>
+  Matrix<T, T_row, T_col> operator-(const Matrix<T, N_row, N_col> &rhs) {
+    static_assert(T_col == N_col, "col is not equal");
+    static_assert(T_row == N_row, "row is not equal");
+    Matrix matrix(this->row_, this->col_);
+    auto size = this->elements_.size();
+    for (int i = 0; i < size; ++i) {
+      matrix.elements_.at(i) = this->elements_.at(i) - rhs.elements_.at(i);
     }
+    return matrix;
   }
   // *
   template <int N_row, int N_col>
@@ -135,6 +130,10 @@ int main() {
   Matrix<int, 2, 3> mat1{1, 2, 3, 4, 5};
   Matrix<int, 3, 2> mat2{1, 0, 0, 1};
   Matrix<int, 2, 2> res = mat1 * mat2;
+  res.print();
+  res = res + res;
+  res.print();
+  res = res - res;
   res.print();
 
   std::cout << "mat1: \n";

@@ -2,7 +2,6 @@
 #include <concepts>
 #include <initializer_list>
 #include <iostream>
-#include <memory>
 #include <vector>
 
 enum Type { Row, Col };
@@ -27,7 +26,7 @@ public:
       : row_(x.row_), col_(x.col_), elements_(x.elements_) {}
 
   Matrix(Matrix &&x) noexcept
-      : row_(x.row_), col_(x.col_), elements_(x.elements_) {};
+      : row_(x.row_), col_(x.col_), elements_(x.elements_){};
 
   Matrix(int row, int col) : row_(row), col_(col) {
     for (int i = 0; i < row * col; ++i) {
@@ -54,7 +53,6 @@ public:
   const T &at(std::size_t idx) const { return elements_.at(idx); }
 
   void push_back(T item) { elements_.emplace_back(item); };
-  //因为存在at和Push_back这两个函数，证明我们在存储matrix的元素的时候也应该是按行展开进行的存储
   void reshape(int row, int column) {
     elements_.resize(row * column);
     row_ = row;
@@ -108,8 +106,8 @@ public:
     if (lhs.col_ == rhs.row_) {
       Matrix matrix(lhs.row_, rhs.col_);
       for (int i = 0; i < lhs.row_ * rhs.col_; ++i) {
-        for (int j = 0; j < lhs.row_; ++j) {          // i
-          for (int k = 0; k < rhs.col_; ++k) {        // j
+        for (int j = 0; j < lhs.row_; ++j) {
+          for (int k = 0; k < rhs.col_; ++k) {
             matrix.at(i) = 1; // += lhs.elements_.at(j*lhs.col_+k) +
                               // rhs.elements_.at(i*rhs.col_+k);
           }
@@ -172,6 +170,7 @@ int main() {
   Matrix<int> matrix(2, 3);
   Matrix<int> mat1;
   Matrix<int> mat2(2, 2);
+  matrix + mat2;
   //  matrix.col_ = 3;
   //  matrix.row_ = 2;
   matrix.push_back(1);
