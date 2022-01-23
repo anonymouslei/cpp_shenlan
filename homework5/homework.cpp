@@ -123,7 +123,8 @@ public:
   //需要满足std::move
   [[nodiscard]] int get_row() const {
     return row_;
-  }[[nodiscard]] int get_col() const {
+  }
+  [[nodiscard]] int get_col() const {
     return col_;
   }
 
