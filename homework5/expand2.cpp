@@ -99,8 +99,8 @@ public:
   }
 
 private:
-  int row_ = T_row;
-  int col_ = T_col;
+  static constexpr int row_ = T_row; // use static constexpr
+  static constexpr int col_ = T_col;
   std::vector<T> elements_;
 };
 
