@@ -11,12 +11,6 @@ public:
     }
   }
 
-  Matrix(int row, int col) : row_(row), col_(col) {
-    for (int i = 0; i < row * col; ++i) {
-      elements_.push_back(T{});
-    }
-  }
-
   Matrix(std::initializer_list<T> l) : elements_(l) {
     elements_.resize(col_ * row_);
   }
@@ -50,7 +44,7 @@ public:
   Matrix<T, T_row, T_col> operator+(const Matrix<T, N_row, N_col> &rhs) {
     static_assert(T_col == N_col, "col is not equal");
     static_assert(T_row == N_row, "row is not equal");
-    Matrix matrix(this->row_, this->col_);
+    Matrix<T, T_row, T_col> matrix;
     auto size = this->elements_.size();
     for (int i = 0; i < size; ++i) {
       matrix.elements_.at(i) = this->elements_.at(i) + rhs.elements_.at(i);
@@ -62,7 +56,7 @@ public:
   Matrix<T, T_row, T_col> operator-(const Matrix<T, N_row, N_col> &rhs) {
     static_assert(T_col == N_col, "col is not equal");
     static_assert(T_row == N_row, "row is not equal");
-    Matrix matrix(this->row_, this->col_);
+    Matrix<T, T_row, T_col> matrix;
     auto size = this->elements_.size();
     for (int i = 0; i < size; ++i) {
       matrix.elements_.at(i) = this->elements_.at(i) - rhs.elements_.at(i);
@@ -73,7 +67,7 @@ public:
   template <int N_row, int N_col>
   Matrix<T, T_row, N_col> operator*(const Matrix<T, N_row, N_col> &rhs) {
     static_assert(T_col == N_row, "dimension is not satisfied");
-    Matrix<T, T_row, N_col> matrix(T_row, N_col);
+    Matrix<T, T_row, N_col> matrix;
     for (int i = 0; i < this->row_ * N_col; ++i) { // k
       for (int j = 0; j < this->row_; ++j) {       // i
         for (int k = 0; k < N_col; ++k) {          // j
@@ -99,8 +93,8 @@ public:
   }
 
 private:
-  static constexpr int row_ = T_row; // use static constexpr
-  static constexpr int col_ = T_col;
+  static constexpr size_t row_ = T_row; // use static constexpr
+  static constexpr size_t col_ = T_col; // 索引应该为无符号数，所以用sdize_t
   std::vector<T> elements_;
 };
 
@@ -113,8 +107,7 @@ concatenate(Matrix<T, T1_row, T1_col> mat1, Matrix<T, T2_row, T2_col> mat2) {
   else
     static_assert(T1_row == T2_row, "row is not equal");
 
-  Matrix<T, T1_row + T2_row *(1 - Type), T1_col + T2_col * Type> matrix(
-      T1_row + T2_row * (1 - Type), T1_col + T2_col * Type);
+  Matrix<T, T1_row + T2_row *(1 - Type), T1_col + T2_col * Type> matrix;
   int mat1_size = T1_row * T1_col;
   int mat2_size = T2_row * T2_col;
   for (int i = 0; i < mat1_size; ++i) {
